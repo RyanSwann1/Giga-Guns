@@ -96,7 +96,7 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\res\Roboto.ttf $(OutputPath)</Command>
+      <Command>copy ..\res\Roboto.ttf "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,7 +111,7 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\res\Roboto.ttf $(OutputPath)</Command>
+      <Command>copy ..\res\Roboto.ttf "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,7 +130,7 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\res\Roboto.ttf $(OutputPath)</Command>
+      <Command>copy ..\res\Roboto.ttf "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;freetype.lib;jpeg.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\res\Roboto.ttf $(OutputPath)</Command>
+      <Command>copy ..\res\Roboto.ttf "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
