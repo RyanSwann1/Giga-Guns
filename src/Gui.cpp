@@ -2,11 +2,10 @@
 
 #include "Gui.h"
 
-
 sf::Uint32 getId(const sf::String & text)
 {
 	/* Hash (djb2 by dan bernstein) */
-	int hash = 5381;
+	sf::Uint32 hash = 5381;
 	const sf::Uint32 *data = text.getData();
 	sf::Uint32 codepoint;
 	while ((codepoint = *data++))
@@ -26,13 +25,13 @@ bool Gui::Button(const sf::String& label, sf::Vector2f position)
 {
 	sf::RectangleShape rect{ sf::Vector2f{ 100, 40 } };
 	sf::Text text{ label, m_font };
-	sf::Uint32 id = getId(label);
+	const sf::Uint32 id = getId(label);
 	assert(id != 0);
 
 	rect.setPosition(position);
 	text.setPosition(position);
 
-	bool containsMouse = rect.getGlobalBounds().contains(sf::Vector2f{ sf::Mouse::getPosition(m_window) });
+	const bool containsMouse = rect.getGlobalBounds().contains(sf::Vector2f{ sf::Mouse::getPosition(m_window) });
 	bool pressed = false;
 
 	if (m_hotId == id)
