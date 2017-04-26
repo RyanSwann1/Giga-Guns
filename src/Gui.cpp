@@ -51,7 +51,9 @@ bool Gui::Button(const sf::String& label, sf::Vector2f position)
 		if (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			if (containsMouse)
+			{
 				pressed = true;
+			}
 			m_activeId = 0;
 		}
 	}

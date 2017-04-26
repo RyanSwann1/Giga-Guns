@@ -10,7 +10,8 @@ int main()
 
 	// load font
 	sf::Font font;
-	if (!font.loadFromFile("Roboto.ttf")) {
+	if (!font.loadFromFile("Roboto.ttf"))
+	{
 		std::cout << "Failed to load Roboto.ttf" << std::endl;
 		return 1;
 	}
@@ -24,7 +25,9 @@ int main()
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+			}
 		}
 
 		window.clear(sf::Color::White);
@@ -33,15 +36,21 @@ int main()
 		{
 			// main menu
 			if (gui.Button("Play", sf::Vector2f{ 50, 50 }))
+			{
 				inMenu = false;
+			}
 			if (gui.Button("Quit", sf::Vector2f{ 50, 110 }))
+			{
 				window.close();
+			}
 		}
 		else
 		{
 			// "level"
 			if (gui.Button("Menu", sf::Vector2f{ 50, 80 }))
+			{
 				inMenu = true;
+			}
 		}
 		window.display();
 	}
