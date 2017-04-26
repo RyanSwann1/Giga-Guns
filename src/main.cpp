@@ -1,10 +1,22 @@
+#include <iostream>
+
 #include <SFML/Graphics.hpp>
+
+#include "Gui.h"
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color::Red);
+	sf::RenderWindow window(sf::VideoMode(200, 200), "Giga-Guns!");
+
+	// load font
+	sf::Font font;
+	if (!font.loadFromFile("Roboto.ttf")) {
+		std::cout << "Failed to load Roboto.ttf" << std::endl;
+		return 1;
+	}
+
+	Gui gui{ font, window };
+	bool inMenu = true;
 
 	while (window.isOpen())
 	{
@@ -15,8 +27,22 @@ int main()
 				window.close();
 		}
 
-		window.clear();
-		window.draw(shape);
+		window.clear(sf::Color::White);
+
+		if (inMenu)
+		{
+			// main menu
+			if (gui.Button("Play", sf::Vector2f{ 50, 50 }))
+				inMenu = false;
+			if (gui.Button("Quit", sf::Vector2f{ 50, 110 }))
+				window.close();
+		}
+		else
+		{
+			// "level"
+			if (gui.Button("Menu", sf::Vector2f{ 50, 80 }))
+				inMenu = true;
+		}
 		window.display();
 	}
 
