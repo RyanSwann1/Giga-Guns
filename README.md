@@ -20,6 +20,7 @@ Game Logic
 
 ⦁	Inventory system that will enable the player to have a selection of weapons to choose from as well as the ability to loot enemies 
 killed.
+
 ⦁	Three gun types. Pistol, Shotgun and machine gun.
 
 ⦁	Ammo system that gives each gun its own specific ammo count.
