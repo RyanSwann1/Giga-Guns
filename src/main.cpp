@@ -1,12 +1,17 @@
 #include <iostream>
 
+
 #include <SFML/Graphics.hpp>
 
 #include "Gui.h"
+#include "LevelParser.h"
+#include "WorldMap.h"
 
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(200, 200), "Giga-Guns!");
+	WorldMap worldMap;
+	LevelParser::parseLevel(worldMap, "Map1.tmx");
 
 	// load font
 	sf::Font font;
@@ -21,37 +26,38 @@ int main()
 
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-			}
-		}
+		worldMap.draw(window);
+		//sf::Event event;
+		//while (window.pollEvent(event))
+		//{
+		//	if (event.type == sf::Event::Closed)
+		//	{
+		//		window.close();
+		//	}
+		//}
 
-		window.clear(sf::Color::White);
+		//window.clear(sf::Color::White);
 
-		if (inMenu)
-		{
-			// main menu
-			if (gui.Button("Play", sf::Vector2f{ 50, 50 }))
-			{
-				inMenu = false;
-			}
-			if (gui.Button("Quit", sf::Vector2f{ 50, 110 }))
-			{
-				window.close();
-			}
-		}
-		else
-		{
-			// "level"
-			if (gui.Button("Menu", sf::Vector2f{ 50, 80 }))
-			{
-				inMenu = true;
-			}
-		}
+		//if (inMenu)
+		//{
+		//	// main menu
+		//	if (gui.Button("Play", sf::Vector2f{ 50, 50 }))
+		//	{
+		//		inMenu = false;
+		//	}
+		//	if (gui.Button("Quit", sf::Vector2f{ 50, 110 }))
+		//	{
+		//		window.close();
+		//	}
+		//}
+		//else
+		//{
+		//	// "level"
+		//	if (gui.Button("Menu", sf::Vector2f{ 50, 80 }))
+		//	{
+		//		inMenu = true;
+		//	}
+		//}
 		window.display();
 	}
 
