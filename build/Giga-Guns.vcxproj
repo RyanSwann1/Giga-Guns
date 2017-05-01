@@ -89,7 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SFML_DIR)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src;$(SFML_DIR)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SFML_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -154,10 +154,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Gui.cpp" />
+    <ClCompile Include="..\src\LevelParser.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\TileLayer.cpp" />
+    <ClCompile Include="..\src\TileSheet.cpp" />
+    <ClCompile Include="..\src\WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Gui.h" />
+    <ClInclude Include="..\src\LevelParser.h" />
+    <ClInclude Include="..\src\Tile.h" />
+    <ClInclude Include="..\src\TileLayer.h" />
+    <ClInclude Include="..\src\TileSheet.h" />
+    <ClInclude Include="..\src\TileSheetDetails.h" />
+    <ClInclude Include="..\src\WorldMap.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Giga-Guns.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
