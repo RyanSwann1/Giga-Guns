@@ -4,7 +4,7 @@
 sf::IntRect TileSheet::getTileLocationByID(const TileSheetDetails & details, const int ID)
 {
 	//Scan through every tile on tilesheet to find appropriate tile by ID
-	int col = 0, row = 1;
+	int col = 0, row = 0;
 	const int firstTileID = 0;
 	const int endTileID = details.m_rows * details.m_columns;
 
@@ -17,13 +17,13 @@ sf::IntRect TileSheet::getTileLocationByID(const TileSheetDetails & details, con
 		}
 
 		//If tile not found, move onto the next tile in the row
-		++row;
+		++col;
 
 		//If reaching end of row, move onto the next
-		if (row == details.m_rows)
+		if (col == details.m_columns)
 		{
-			row = 0;
-			++col;
+			col = 0;
+			++row;
 		}
 	}
 
@@ -32,10 +32,8 @@ sf::IntRect TileSheet::getTileLocationByID(const TileSheetDetails & details, con
 	const int margin = details.m_margin;
 	const int spacing = details.m_spacing;
 
-	--row;
-
-	return sf::IntRect((margin + ((spacing + tileSize) * row)),
-		(margin + ((spacing + tileSize) * col)),
+	return sf::IntRect((margin + ((spacing + tileSize) * col)),
+		(margin + ((spacing + tileSize) * row)),
 		tileSize, tileSize);
 }
 

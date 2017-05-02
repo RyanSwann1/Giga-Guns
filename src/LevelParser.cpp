@@ -26,9 +26,9 @@ struct LevelDetails
 void parseTileMap(WorldMap& worldMap, const TiXmlElement & root, const LevelDetails & levelDetails);
 void parseTileLayer(WorldMap& worldMap, const TiXmlElement & tileLayerElement, const LevelDetails& levelDetails, std::string&& tileLayerName);
 LevelDetails parseLevelDetails(const TiXmlElement& root);
+std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElement, const LevelDetails & levelDetails);
 const TiXmlElement* findNode(const TiXmlElement& root, const std::string& name);
 const TiXmlElement* findNode(const TiXmlElement& root, const std::string& value, const std::string& name);
-std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement& tileLayerElement, const LevelDetails& levelDetails);
 int getNumberOfTileLayers(const TiXmlElement& root);
 int getNumberOfTileSets(const TiXmlElement& root);
 
@@ -107,11 +107,6 @@ std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElem
 		decodedIDs = base64.base64_decode(t);
 	}
 
-	uLongf sizeOfIDs = levelDetails.m_mapSize.x * levelDetails.m_mapSize.y * sizeof(int);
-	std::vector<int> ids(levelDetails.m_mapSize.x * levelDetails.m_mapSize.y);
-
-	uncompress((Bytef*)&ids[0], &sizeOfIDs, (const Bytef*)decodedIDs.c_str(), decodedIDs.size());
-
 	std::vector<int> layerRow(levelDetails.m_mapSize.x);
 	for (int i = 0; i < levelDetails.m_mapSize.y; ++i)
 	{
@@ -122,12 +117,14 @@ std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElem
 	{
 		for (int cols = 0; cols < levelDetails.m_mapSize.x; ++cols)
 		{
-			tileData[rows][cols] = ids[rows * levelDetails.m_mapSize.x + cols];
+			tileData[rows][cols] = *((int*)decodedIDs.data() + rows * levelDetails.m_mapSize.x + cols) - 1;
+
 		}
 	}
 
 	return std::move(tileData);
 }
+
 
 int getNumberOfTileLayers(const TiXmlElement & root)
 {
@@ -175,36 +172,7 @@ void parseTileMap(WorldMap& worldMap, const TiXmlElement & root, const LevelDeta
 			{
 				if (!worldMap.hasTileLayer(tileLayerName))
 				{
-					//Find correct tilesheet that corresponds with this tile layer
-					if (tileLayerNode->FirstChildElement()->Value() == std::string("properties"))
-					{
-						const TiXmlElement& tileLayerProperty = *tileLayerNode->FirstChildElement()->FirstChildElement();
-						const std::string tileSheetName = tileLayerProperty.Attribute("value");
-
-						parseTileLayer(worldMap, *tileLayerNode, levelDetails, std::move(tileLayerName));
-					}
-
-					////If only one tile set exists
-					//if (tileSets.size() == static_cast<size_t>(1))
-					//{
-					//	std::cout << tileLayerName << "\n";
-					//	parseTileLayer(*tileLayerNode, levelDetails, *tileSets.begin(), tileLayerName);
-					//}
-					////If more than one tile set exists
-					//else
-					//{
-					//	if (tileLayerNode->FirstChildElement()->Value() == std::string("properties"))
-					//	{
-					//		const TiXmlElement& tileLayerProperty = *tileLayerNode->FirstChildElement()->FirstChildElement();
-					//		const std::string tileSetName = tileLayerProperty.Attribute("value");
-					//		auto cIter = std::find_if(tileSets.cbegin(), tileSets.cend(), [tileSetName](const TileSetDetails& tileSetDetails) {return tileSetDetails.m_name == tileSetName; });
-					//		if (cIter != tileSets.cend())
-					//		{
-					//			std::cout << "Tile Layer " << i << "\n";
-					//			parseTileLayer(*tileLayerNode, levelDetails, *cIter->, tileLayerName);
-					//		}
-					//	}
-					//}
+					parseTileLayer(worldMap, *tileLayerNode, levelDetails, std::move(tileLayerName));
 				}
 			}
 		}

@@ -38,7 +38,7 @@ void TileLayer::loadInTileMap(const std::vector<std::vector<int>>& tileMapData, 
 			int tileDrawID = tileMapData[col][row]; //Get ID for tile#
 			if (tileDrawID > 0)
 			{
-				--tileDrawID; 
+				//tileDrawID; 
 				m_tileMap.emplace_back(sf::Vector2i(row, col), tileSheetDetails, tileDrawID, mapTexture);
 			}
 		}

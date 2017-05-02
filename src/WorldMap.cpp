@@ -9,7 +9,7 @@
 WorldMap::WorldMap()
 	: m_tileLayers(),
 	m_currentMapName(),
-	m_tileSheetDetails(16, 53, 54, 0, 0)
+	m_tileSheetDetails(32, 40, 54, 0, 0)
 {
 	m_mapTexture.loadFromFile("tilesheet_complete.PNG");
 }
