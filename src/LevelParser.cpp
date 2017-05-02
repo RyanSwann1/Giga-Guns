@@ -1,5 +1,4 @@
 #include "LevelParser.h"
-#include "zlib.h"
 #include "XML\tinystr.h"
 #include "XML\tinyxml.h"
 #include "WorldMap.h"

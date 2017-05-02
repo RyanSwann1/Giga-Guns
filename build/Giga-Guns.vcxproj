@@ -177,12 +177,6 @@
     <ClInclude Include="..\src\WorldMap.h" />
     <ClInclude Include="..\src\XML\tinystr.h" />
     <ClInclude Include="..\src\XML\tinyxml.h" />
-    <ClInclude Include="..\src\zconf.h" />
-    <ClInclude Include="..\src\zlib.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Giga-Guns.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
