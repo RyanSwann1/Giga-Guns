@@ -57,7 +57,6 @@ class WorldMap
 
 	public:
 		TileLayer(const std::vector<std::vector<int>>& tileMapData, const sf::Vector2i& mapSize, const TileSheet& tileSheet);
-
 		void draw(sf::RenderWindow& window);
 
 	private:
@@ -75,8 +74,6 @@ private:
 
 	void parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails);
 	void parseTileSheets(const TiXmlElement& root);
-
 	std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElement, const LevelDetails & levelDetails) const;
-	bool hasTileSheet(const std::string& tileSheetName) const;
 	const TileSheet& getTileSheet(const std::string& name) const;
 };

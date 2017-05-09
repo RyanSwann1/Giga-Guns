@@ -18,7 +18,7 @@ public:
 };
 
 LevelDetails parseLevelDetails(const TiXmlElement& root);
-
+			
 //TileSheetDetails
 WorldMap::TileSheetDetails::TileSheetDetails(const std::string& name, int tileSize, int rows, int columns, double margin, double spacing)
 	: m_name(name), 
@@ -32,7 +32,7 @@ WorldMap::TileSheetDetails::TileSheetDetails(const std::string& name, int tileSi
 //TileSheet
 WorldMap::TileSheet::TileSheet(const TileSheetDetails& tileSheetDetails, const std::string& tileSheetPath)
 	: m_tileSheetDetails(tileSheetDetails),
-	m_texture(new sf::Texture()),
+	m_texture(std::make_unique<sf::Texture>()),
 	m_filePath(tileSheetPath)
 {
 	const bool textureLoaded = m_texture->loadFromFile(tileSheetPath);
@@ -41,9 +41,9 @@ WorldMap::TileSheet::TileSheet(const TileSheetDetails& tileSheetDetails, const s
 
 WorldMap::TileSheet::TileSheet(TileSheet&& orig)
 	: m_tileSheetDetails(orig.m_tileSheetDetails),
-	m_filePath(orig.m_filePath)
+	m_filePath(orig.m_filePath),
+	m_texture(std::move(orig.m_texture))
 {
-	m_texture = std::move(orig.m_texture);
 }
 
 const std::string& WorldMap::TileSheet::getFilePath() const
@@ -167,12 +167,6 @@ WorldMap::WorldMap(const std::string& mapName)
 	const LevelDetails levelDetails = parseLevelDetails(rootNode);
 	parseTileSheets(rootNode);
 	parseTileMap(rootNode, levelDetails);
-}
-
-bool WorldMap::hasTileSheet(const std::string & tileSheetName) const
-{
-	auto cIter = m_tileSheets.find(tileSheetName);
-	return (cIter != m_tileSheets.cend() ? false : true);
 }
 
 void WorldMap::draw(sf::RenderWindow & window)
