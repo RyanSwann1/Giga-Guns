@@ -1,12 +1,13 @@
-#include <iostream>
-
-#include <SFML/Graphics.hpp>
-
 #include "Gui.h"
+#include "WorldMap.h"
+#include <fstream>
+#include <SFML/Graphics.hpp>
+#include <iostream>
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(200, 200), "Giga-Guns!");
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Giga-Guns!");
+	WorldMap worldMap("Map.tmx");
 
 	// load font
 	sf::Font font;
@@ -31,6 +32,7 @@ int main()
 		}
 
 		window.clear(sf::Color::White);
+		worldMap.draw(window);
 
 		if (inMenu)
 		{
