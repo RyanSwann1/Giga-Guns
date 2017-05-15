@@ -73,16 +73,28 @@ class WorldMap
 		std::vector<sf::FloatRect> m_tileMap;
 	};
 
+	class EnemySpawnLayer
+	{
+	public:
+		void setMap(const std::vector<std::vector<int>>& tileMapData, const LevelDetails& levelDetails);
+		const std::vector<sf::Vector2f>& getMap() const;
+
+	private:
+		std::vector<sf::Vector2f> m_enemySpawnLocations;
+	};
+
 public:
 	WorldMap(const std::string& mapName);
 
 	const CollidableTileLayer& getCollidableTileLayer() const;
+	const EnemySpawnLayer& getEnemySpawnLayer() const;
 	void draw(sf::RenderWindow& window);
 
 private:
 	std::vector<WorldMap::TileLayer> m_tileLayers;
 	std::unordered_map<std::string, WorldMap::TileSheet> m_tileSheets;
 	CollidableTileLayer m_collidableTileLayer;
+	EnemySpawnLayer m_enemySpawnLayer;
 
 	void parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails);
 	void parseTileSheets(const TiXmlElement& root);

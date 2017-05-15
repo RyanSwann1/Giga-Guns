@@ -1,6 +1,7 @@
 #include "Gui.h"
 #include "WorldMap.h"
 #include "CollisionHandler.h"
+#include "EnemyManager.h"
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -11,6 +12,7 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(800, 800), "Giga-Guns!");
 	WorldMap worldMap("Map.tmx");
+	EnemyManager m_enemyManager;
 
 	// load font
 	sf::Font font;
@@ -98,10 +100,12 @@ int main()
 				levelMenuOpen = true;
 			}
 
+		
 			pos += CollisionHandler::handleCollision(sf::FloatRect(pos, player.getSize()), worldMap);
-
 			player.setPosition(pos);
-			window.draw(player);
+			m_enemyManager.update(lastFrameTime.asSeconds(), worldMap);
+			m_enemyManager.draw(window);
+			window.draw(player);		
 		}
 		window.display();
 	}

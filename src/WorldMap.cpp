@@ -203,6 +203,11 @@ const WorldMap::CollidableTileLayer& WorldMap::getCollidableTileLayer() const
 	return m_collidableTileLayer;
 }
 
+const WorldMap::EnemySpawnLayer& WorldMap::getEnemySpawnLayer() const
+{
+	return m_enemySpawnLayer;
+}
+
 void WorldMap::draw(sf::RenderWindow & window)
 {
 	for (auto& tileLayer : m_tileLayers)
@@ -225,8 +230,11 @@ void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & leve
 			m_collidableTileLayer.setTileMap(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails);
 			continue;
 		}
-
-		const std::string tileLayerName = tileLayerNode->Attribute("name");
+		else if (tileLayerNode->Attribute("name") == std::string("Enemy Spawn Layer"))
+		{
+			m_enemySpawnLayer.setMap(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails);
+			continue;
+		}
 
 		//Getting the tile sheet name that the tile layer uses
 		//Does mean that tile layer can only use one tile sheet
@@ -324,4 +332,25 @@ const WorldMap::TileSheet & WorldMap::getTileSheet(const std::string & name) con
 	auto cIter = m_tileSheets.find(name);
 	assert(cIter != m_tileSheets.cend());
 	return cIter->second;
+}
+
+void WorldMap::EnemySpawnLayer::setMap(const std::vector<std::vector<int>>& tileMapData, const LevelDetails& levelDetails)
+{
+	for (int row = 0; row < levelDetails.m_mapSize.y; ++row)
+	{
+		for (int col = 0; col < levelDetails.m_mapSize.x; ++col)
+		{
+			const int tileID = tileMapData[row][col];
+			const int tileSize = levelDetails.m_tileSize;
+			if (tileID > 0)
+			{
+				m_enemySpawnLocations.emplace_back(col * tileSize, row * tileSize);
+			}
+		}
+	}
+}
+
+const std::vector<sf::Vector2f>& WorldMap::EnemySpawnLayer::getMap() const
+{
+	return m_enemySpawnLocations;
 }

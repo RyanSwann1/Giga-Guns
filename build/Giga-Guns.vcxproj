@@ -175,6 +175,7 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
   <ItemGroup>
     <ClCompile Include="..\src\Base64.cpp" />
     <ClCompile Include="..\src\CollisionHandler.cpp" />
+    <ClCompile Include="..\src\EnemyManager.cpp" />
     <ClCompile Include="..\src\Gui.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\WorldMap.cpp" />
@@ -186,7 +187,9 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     <ClInclude Include="..\src\Base64.h" />
     <ClInclude Include="..\src\CollidableTile.h" />
     <ClInclude Include="..\src\CollisionHandler.h" />
+    <ClInclude Include="..\src\EnemyManager.h" />
     <ClInclude Include="..\src\Gui.h" />
+    <ClInclude Include="..\src\RandomNumberGenerator.h" />
     <ClInclude Include="..\src\WorldMap.h" />
     <ClInclude Include="..\src\XML\tinyxml.h" />
   </ItemGroup>
