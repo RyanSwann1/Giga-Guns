@@ -104,16 +104,43 @@ sf::IntRect WorldMap::TileSheet::getTileLocationByPosition(const sf::IntRect& po
 	return sf::IntRect(position.left * tileSize, position.top * tileSize, position.width * tileSize, position.height * tileSize);
 }
 
+//CollidableTileLayer
+void WorldMap::CollidableTileLayer::setTileMap(const std::vector<std::vector<int>>& tileMapData, const LevelDetails& levelDetails)
+{
+	if (!m_tileMap.empty())
+	{
+		m_tileMap.clear();
+	}
+
+	for (int row = 0; row < levelDetails.m_mapSize.y; ++row)
+	{
+		for (int col = 0; col < levelDetails.m_mapSize.x; ++col)
+		{
+			const int tileID = tileMapData[col][row];
+			const int tileSize = levelDetails.m_tileSize;
+			if (tileID > 0)
+			{
+				m_tileMap.emplace_back(row * tileSize, col * tileSize, tileSize, tileSize);
+			}
+		}
+	}
+}
+
+const std::vector<sf::FloatRect>& WorldMap::CollidableTileLayer::getTileMap() const
+{
+	return m_tileMap;
+}
+
 //TileLayer
-WorldMap::TileLayer::Tile::Tile(const sf::Vector2i& position, const TileSheet& tileSheet, int tileID)
-	: m_position(position),
+WorldMap::TileLayer::Tile::Tile(const sf::Vector2f& position, const TileSheet& tileSheet, int tileID)
+	: m_position(position, sf::Vector2f(tileSheet.getDetails().m_tileSize, tileSheet.getDetails().m_tileSize)),
 	m_tileID(tileID),
 	m_tileSheet(tileSheet)
 {
 	m_sprite.setTexture(m_tileSheet.getTexture());
 	m_sprite.setTextureRect(m_tileSheet.getTileLocationByID(m_tileID));
 	const int tileSize = m_tileSheet.getDetails().m_tileSize;
-	m_sprite.setPosition(sf::Vector2f(m_position.x * tileSize, m_position.y * tileSize));
+	m_sprite.setPosition(sf::Vector2f(m_position.left * tileSize, m_position.top * tileSize));
 }
 
 WorldMap::TileLayer::Tile::Tile(const Tile& orig)
@@ -124,7 +151,7 @@ WorldMap::TileLayer::Tile::Tile(const Tile& orig)
 	m_sprite.setTexture(m_tileSheet.getTexture());
 	m_sprite.setTextureRect(m_tileSheet.getTileLocationByID(m_tileID));
 	const int tileSize = m_tileSheet.getDetails().m_tileSize;
-	m_sprite.setPosition(sf::Vector2f(m_position.x * tileSize, m_position.y * tileSize));
+	m_sprite.setPosition(sf::Vector2f(m_position.left * tileSize, m_position.top * tileSize));
 }
 
 WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData, const sf::Vector2i& mapSize, const TileSheet& tileSheet)
@@ -137,10 +164,10 @@ WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData,
 	{
 		for (int col = 0; col < mapSize.x; ++col)
 		{
-			int tileDrawID = tileMapData[row][col]; //Get ID for tile
+			const int tileDrawID = tileMapData[row][col]; //Get ID for tile
 			if (tileDrawID > 0)
 			{
-				m_tileMap.emplace_back(sf::Vector2i(col, row), tileSheet, tileDrawID);
+				m_tileMap.emplace_back(sf::Vector2f(col, row), tileSheet, tileDrawID);
 			}
 		}
 	}
@@ -156,7 +183,9 @@ void WorldMap::TileLayer::draw(sf::RenderWindow& window)
 
 //WorldMap
 WorldMap::WorldMap(const std::string& mapName)
-	: m_tileLayers()
+	: m_tileLayers(),
+	m_tileSheets(),
+	m_collidableTileLayer()
 {
 	//Parse Level
 	TiXmlDocument levelDocument;
@@ -167,6 +196,11 @@ WorldMap::WorldMap(const std::string& mapName)
 	const LevelDetails levelDetails = parseLevelDetails(rootNode);
 	parseTileSheets(rootNode);
 	parseTileMap(rootNode, levelDetails);
+}
+
+const WorldMap::CollidableTileLayer& WorldMap::getCollidableTileLayer() const
+{
+	return m_collidableTileLayer;
 }
 
 void WorldMap::draw(sf::RenderWindow & window)
@@ -185,12 +219,21 @@ void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & leve
 		{
 			continue;
 		}
+
+		if (tileLayerNode->Attribute("name") == std::string("Collidable TileLayer"))
+		{
+			m_collidableTileLayer.setTileMap(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails);
+			continue;
+		}
+
+		const std::string tileLayerName = tileLayerNode->Attribute("name");
+
 		//Getting the tile sheet name that the tile layer uses
 		//Does mean that tile layer can only use one tile sheet
 		//Will have to implement a way to be able to use multiple tilesheets for a singular layer when needed
-		const auto& tileSheetNode = *tileLayerNode->FirstChildElement()->FirstChildElement();
-		const std::string tileSheetName = tileSheetNode.Attribute("value");
-
+		const auto& tileSheetPropertyNode = *tileLayerNode->FirstChildElement()->FirstChildElement();
+		const std::string tileSheetName = tileSheetPropertyNode.Attribute("value");
+		
 		m_tileLayers.emplace_back(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails.m_mapSize, getTileSheet(tileSheetName));
 	}
 }

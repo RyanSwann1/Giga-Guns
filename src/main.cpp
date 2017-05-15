@@ -1,10 +1,11 @@
 #include "Gui.h"
 #include "WorldMap.h"
+#include "CollisionHandler.h"
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#define PLAYER_SPEED 50
+#define PLAYER_SPEED 100
 
 int main()
 {
@@ -96,6 +97,8 @@ int main()
 			{
 				levelMenuOpen = true;
 			}
+
+			pos += CollisionHandler::handleCollision(sf::FloatRect(pos, player.getSize()), worldMap);
 
 			player.setPosition(pos);
 			window.draw(player);

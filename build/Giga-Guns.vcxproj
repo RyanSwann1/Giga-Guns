@@ -99,7 +99,9 @@
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
+copy ..\res\Map1.tmx "$(OutputPath)"
+copy ..\res\tilesheet_complete.png "$(OutputPath)"
+copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,7 +119,9 @@ copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
+copy ..\res\Map1.tmx "$(OutputPath)"
+copy ..\res\tilesheet_complete.png "$(OutputPath)"
+copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,7 +143,9 @@ copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
+copy ..\res\Map1.tmx "$(OutputPath)"
+copy ..\res\tilesheet_complete.png "$(OutputPath)"
+copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,11 +167,14 @@ copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
+copy ..\res\Map1.tmx "$(OutputPath)"
+copy ..\res\tilesheet_complete.png "$(OutputPath)"
+copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Base64.cpp" />
+    <ClCompile Include="..\src\CollisionHandler.cpp" />
     <ClCompile Include="..\src\Gui.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\WorldMap.cpp" />
@@ -175,6 +184,8 @@ copy ..\res\tilesheet_complete.png "$(OutputPath)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Base64.h" />
+    <ClInclude Include="..\src\CollidableTile.h" />
+    <ClInclude Include="..\src\CollisionHandler.h" />
     <ClInclude Include="..\src\Gui.h" />
     <ClInclude Include="..\src\WorldMap.h" />
     <ClInclude Include="..\src\XML\tinyxml.h" />

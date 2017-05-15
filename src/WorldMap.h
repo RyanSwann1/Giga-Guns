@@ -46,10 +46,10 @@ class WorldMap
 		class Tile
 		{
 		public:
-			Tile(const sf::Vector2i& position, const TileSheet& tileSheet, int tileID);
+			Tile(const sf::Vector2f& position, const TileSheet& tileSheet, int tileID);
 			Tile(const Tile& orig);
 
-			const sf::Vector2i m_position;
+			const sf::FloatRect m_position;
 			const int m_tileID;
 			const TileSheet& m_tileSheet;
 			sf::Sprite m_sprite;
@@ -63,14 +63,26 @@ class WorldMap
 		std::vector<Tile> m_tileMap;
 	};
 
+	class CollidableTileLayer
+	{
+	public:
+		void setTileMap(const std::vector<std::vector<int>>& tileMapData, const LevelDetails& levelDetails);
+		const std::vector<sf::FloatRect>& getTileMap() const;
+
+	private:
+		std::vector<sf::FloatRect> m_tileMap;
+	};
+
 public:
 	WorldMap(const std::string& mapName);
 
+	const CollidableTileLayer& getCollidableTileLayer() const;
 	void draw(sf::RenderWindow& window);
 
 private:
 	std::vector<WorldMap::TileLayer> m_tileLayers;
 	std::unordered_map<std::string, WorldMap::TileSheet> m_tileSheets;
+	CollidableTileLayer m_collidableTileLayer;
 
 	void parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails);
 	void parseTileSheets(const TiXmlElement& root);
