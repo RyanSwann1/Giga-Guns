@@ -1,18 +1,20 @@
 #include "Gui.h"
 #include "WorldMap.h"
 #include "CollisionHandler.h"
+#include "GunManager.h"
 #include "EnemyManager.h"
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#define PLAYER_SPEED 100
+#define PLAYER_SPEED 120
 
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(800, 800), "Giga-Guns!");
 	WorldMap worldMap("Map.tmx");
-	EnemyManager m_enemyManager;
+	EnemyManager enemyManager;
+	GunManager gunManager;
 
 	// load font
 	sf::Font font;
@@ -28,6 +30,8 @@ int main()
 	Gui gui{ font, window };
 	bool inMenu = true, levelMenuOpen = false, escapeKeyPressed;
 	sf::Clock frameClock;
+	Direction playerMoveDirection = Direction::None;
+	std::vector<sf::RectangleShape> bullets;
 
 	while (window.isOpen())
 	{
@@ -78,33 +82,42 @@ int main()
 		else
 		{
 			// "level"
-			sf::Vector2f pos = player.getPosition();
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			sf::Vector2f playerPosition = player.getPosition();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				pos.x -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerPosition.x -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerMoveDirection = Direction::Left;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
-				pos.x += PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerPosition.x += PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerMoveDirection = Direction::Right;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			{
-				pos.y += PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerPosition.y += PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerMoveDirection = Direction::Down;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
-				pos.y -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerPosition.y -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				playerMoveDirection = Direction::Up;
 			}
 			if (escapeKeyPressed)
 			{
 				levelMenuOpen = true;
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && playerMoveDirection != Direction::None)
+			{
+				gunManager.fireEquippedGun(playerPosition, playerMoveDirection);
+			}
 
-		
-			pos += CollisionHandler::handleCollision(sf::FloatRect(pos, player.getSize()), worldMap);
-			player.setPosition(pos);
-			m_enemyManager.update(lastFrameTime.asSeconds(), worldMap);
-			m_enemyManager.draw(window);
+			playerPosition += CollisionHandler::handleTileCollision(sf::FloatRect(playerPosition, player.getSize()), worldMap);
+			player.setPosition(playerPosition);
+			gunManager.update(enemyManager, worldMap, lastFrameTime.asSeconds());
+			enemyManager.update(lastFrameTime.asSeconds(), worldMap);
+			enemyManager.draw(window);
+			gunManager.draw(window);
 			window.draw(player);		
 		}
 		window.display();

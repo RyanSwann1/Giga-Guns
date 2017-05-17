@@ -6,9 +6,24 @@
 #include <memory>
 
 class TiXmlElement;
-class LevelDetails;
 class WorldMap
 {
+	class LevelDetails
+	{
+	public:
+		LevelDetails()
+			: m_tileSize(0),
+			m_mapSize()
+		{}
+		LevelDetails(int tileSize, const sf::Vector2i& mapSize)
+			: m_tileSize(tileSize),
+			m_mapSize(mapSize)
+		{}
+
+		int m_tileSize;
+		sf::Vector2i m_mapSize;
+	};
+
 	class TileSheetDetails
 	{
 	public:
@@ -18,8 +33,8 @@ class WorldMap
 		const int m_tileSize;
 		const int m_rows;
 		const int m_columns;
-		const int m_margin;
-		const int m_spacing;
+		const double m_margin;
+		const double m_spacing;
 	};
 	
 	class TileSheet
@@ -89,15 +104,18 @@ public:
 	const CollidableTileLayer& getCollidableTileLayer() const;
 	const EnemySpawnLayer& getEnemySpawnLayer() const;
 	void draw(sf::RenderWindow& window);
+	const LevelDetails& getLevelDetails() const;
 
 private:
-	std::vector<WorldMap::TileLayer> m_tileLayers;
-	std::unordered_map<std::string, WorldMap::TileSheet> m_tileSheets;
+	std::vector<TileLayer> m_tileLayers;
+	std::unordered_map<std::string, TileSheet> m_tileSheets;
 	CollidableTileLayer m_collidableTileLayer;
 	EnemySpawnLayer m_enemySpawnLayer;
+	LevelDetails m_levelDetails;
 
-	void parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails);
+	void parseTileMap(const TiXmlElement & root);
 	void parseTileSheets(const TiXmlElement& root);
-	std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElement, const LevelDetails & levelDetails) const;
+	std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElement) const;
+	LevelDetails parseLevelDetails(const TiXmlElement& root);
 	const TileSheet& getTileSheet(const std::string& name) const;
 };

@@ -4,20 +4,6 @@
 #include <algorithm>
 #include <assert.h>
 #include <utility>
-
-class LevelDetails
-{
-public:
-	LevelDetails(int tileSize, const sf::Vector2i& mapSize)
-		: m_tileSize(tileSize),
-		m_mapSize(mapSize)
-	{}
-
-	const int m_tileSize;
-	const sf::Vector2i m_mapSize;
-};
-
-LevelDetails parseLevelDetails(const TiXmlElement& root);
 			
 //TileSheetDetails
 WorldMap::TileSheetDetails::TileSheetDetails(const std::string& name, int tileSize, int rows, int columns, double margin, double spacing)
@@ -90,8 +76,8 @@ sf::IntRect WorldMap::TileSheet::getTileLocationByID(int ID) const
 
 	//Get location on the tile sheet
 	const int tileSize = m_tileSheetDetails.m_tileSize;
-	const int margin = m_tileSheetDetails.m_margin;
-	const int spacing = m_tileSheetDetails.m_spacing;
+	const double margin = m_tileSheetDetails.m_margin;
+	const double spacing = m_tileSheetDetails.m_spacing;
 
 	return sf::IntRect((margin + ((spacing + tileSize) * col)),
 		(margin + ((spacing + tileSize) * row)),
@@ -193,9 +179,9 @@ WorldMap::WorldMap(const std::string& mapName)
 	assert(isOpen);
 
 	const TiXmlElement& rootNode = *levelDocument.RootElement();
-	const LevelDetails levelDetails = parseLevelDetails(rootNode);
+	m_levelDetails = parseLevelDetails(rootNode);
 	parseTileSheets(rootNode);
-	parseTileMap(rootNode, levelDetails);
+	parseTileMap(rootNode);
 }
 
 const WorldMap::CollidableTileLayer& WorldMap::getCollidableTileLayer() const
@@ -216,7 +202,12 @@ void WorldMap::draw(sf::RenderWindow & window)
 	}
 }
 
-void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails)
+const WorldMap::LevelDetails & WorldMap::getLevelDetails() const
+{
+	return m_levelDetails;
+}
+
+void WorldMap::parseTileMap(const TiXmlElement & root)
 {
 	for (const TiXmlElement* tileLayerNode = root.FirstChildElement(); tileLayerNode != nullptr; tileLayerNode = tileLayerNode->NextSiblingElement())
 	{
@@ -227,12 +218,12 @@ void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & leve
 
 		if (tileLayerNode->Attribute("name") == std::string("Collidable TileLayer"))
 		{
-			m_collidableTileLayer.setTileMap(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails);
+			m_collidableTileLayer.setTileMap(decodeTileLayer(*tileLayerNode), m_levelDetails);
 			continue;
 		}
 		else if (tileLayerNode->Attribute("name") == std::string("Enemy Spawn Layer"))
 		{
-			m_enemySpawnLayer.setMap(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails);
+			m_enemySpawnLayer.setMap(decodeTileLayer(*tileLayerNode), m_levelDetails);
 			continue;
 		}
 
@@ -242,7 +233,7 @@ void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & leve
 		const auto& tileSheetPropertyNode = *tileLayerNode->FirstChildElement()->FirstChildElement();
 		const std::string tileSheetName = tileSheetPropertyNode.Attribute("value");
 		
-		m_tileLayers.emplace_back(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails.m_mapSize, getTileSheet(tileSheetName));
+		m_tileLayers.emplace_back(decodeTileLayer(*tileLayerNode), m_levelDetails.m_mapSize, getTileSheet(tileSheetName));
 	}
 }
 
@@ -280,17 +271,7 @@ void WorldMap::parseTileSheets(const TiXmlElement & root)
 	}
 }
 
-LevelDetails parseLevelDetails(const TiXmlElement & root)
-{
-	int width = 0, height = 0, tileSize = 0;
-	root.Attribute("width", &width);
-	root.Attribute("height", &height);
-	root.Attribute("tilewidth", &tileSize);
-
-	return LevelDetails(tileSize, sf::Vector2i(width, height));
-}
-
-std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & tileLayerElement, const LevelDetails & levelDetails) const
+std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & tileLayerElement) const
 {
 	std::vector<std::vector<int>> tileData;
 
@@ -310,21 +291,31 @@ std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & til
 	const std::string t = text->Value();
 	decodedIDs = base64.base64_decode(t);
 
-	const std::vector<int> layerColumns(levelDetails.m_mapSize.x);
-	for (int i = 0; i < levelDetails.m_mapSize.y; ++i)
+	const std::vector<int> layerColumns(m_levelDetails.m_mapSize.x);
+	for (int i = 0; i < m_levelDetails.m_mapSize.y; ++i)
 	{
 		tileData.push_back(layerColumns);
 	}
 
-	for (int rows = 0; rows < levelDetails.m_mapSize.y; ++rows)
+	for (int rows = 0; rows < m_levelDetails.m_mapSize.y; ++rows)
 	{
-		for (int cols = 0; cols < levelDetails.m_mapSize.x; ++cols)
+		for (int cols = 0; cols < m_levelDetails.m_mapSize.x; ++cols)
 		{
-			tileData[rows][cols] = *((int*)decodedIDs.data() + rows * levelDetails.m_mapSize.x + cols) - 1;
+			tileData[rows][cols] = *((int*)decodedIDs.data() + rows * m_levelDetails.m_mapSize.x + cols) - 1;
 		}
 	}
 
 	return tileData;
+}
+
+WorldMap::LevelDetails WorldMap::parseLevelDetails(const TiXmlElement & root)
+{
+	int width = 0, height = 0, tileSize = 0;
+	root.Attribute("width", &width);
+	root.Attribute("height", &height);
+	root.Attribute("tilewidth", &tileSize);
+
+	return WorldMap::LevelDetails(tileSize, sf::Vector2i(width, height));
 }
 
 const WorldMap::TileSheet & WorldMap::getTileSheet(const std::string & name) const
