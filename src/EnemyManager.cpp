@@ -23,20 +23,8 @@ void EnemyManager::draw(sf::RenderWindow & window)
 {
 	for (auto& enemy : m_enemies)
 	{
-		enemy.draw(window);
+		window.draw(enemy);
 	}
-}
-
-EnemyManager::Enemy::Enemy(const sf::Vector2f& size, const sf::Vector2f & position)
-	: m_rect(size)
-{
-	m_rect.setPosition(position);
-	m_rect.setFillColor(sf::Color::Red);
-}
-
-void EnemyManager::Enemy::draw(sf::RenderWindow & window)
-{
-	window.draw(m_rect);
 }
 
 void EnemyManager::spawnEnemy(const WorldMap& worldMap)
@@ -44,5 +32,8 @@ void EnemyManager::spawnEnemy(const WorldMap& worldMap)
 	const auto& enemySpawnLocationMap = worldMap.getEnemySpawnLayer().getMap();
 	const sf::Vector2f spawnLocation = enemySpawnLocationMap.at(RandomNumberGenerator::getRandNumb(0, enemySpawnLocationMap.size() - 1));
 	
-	m_enemies.emplace_back(sf::Vector2f(32, 32), spawnLocation);
+	sf::RectangleShape rect(sf::Vector2f(32, 32));
+	rect.setPosition(spawnLocation);
+	rect.setFillColor(sf::Color::Red);
+	m_enemies.push_back(rect);
 }
