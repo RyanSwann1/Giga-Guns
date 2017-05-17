@@ -98,7 +98,7 @@ int main()
 				levelMenuOpen = true;
 			}
 
-			pos += CollisionHandler::handleCollision(sf::FloatRect(pos, player.getSize()), worldMap);
+			pos += CollisionHandler::handleTileCollision(sf::FloatRect(pos, player.getSize()), worldMap);
 
 			player.setPosition(pos);
 			window.draw(player);

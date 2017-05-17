@@ -184,7 +184,6 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Base64.h" />
-    <ClInclude Include="..\src\CollidableTile.h" />
     <ClInclude Include="..\src\CollisionHandler.h" />
     <ClInclude Include="..\src\Gui.h" />
     <ClInclude Include="..\src\WorldMap.h" />
