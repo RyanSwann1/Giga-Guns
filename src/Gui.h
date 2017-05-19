@@ -8,7 +8,6 @@ public:
 	bool Button(const sf::String& label, sf::Vector2f position);
 
 private:
-
 	sf::Font& m_font;
 	sf::RenderWindow& m_window;
 	sf::Uint32 m_hotId;

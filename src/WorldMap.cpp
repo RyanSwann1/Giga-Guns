@@ -136,7 +136,10 @@ WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData,
 		for (int col = 0; col < mapSize.x; ++col)
 		{
 			const int tileDrawID = tileMapData[row][col];
-			m_tileMap.emplace_back(sf::Vector2f(col, row), tileSheet, tileDrawID);
+			if (tileDrawID >= 0)
+			{
+				m_tileMap.emplace_back(sf::Vector2f(col, row), tileSheet, tileDrawID);
+			}
 		}
 	}
 }
