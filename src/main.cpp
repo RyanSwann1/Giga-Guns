@@ -1,10 +1,11 @@
 #include "Gui.h"
 #include "WorldMap.h"
+#include "CollisionHandler.h"
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#define PLAYER_SPEED 50
+#define PLAYER_SPEED 100
 
 int main()
 {
@@ -74,34 +75,34 @@ int main()
 		}
 		else
 		{
-			// "level"
-			sf::Vector2f pos = player.getPosition();
+			sf::Vector2f movement;
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
-				pos.x -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				movement.x -= PLAYER_SPEED * lastFrameTime.asSeconds();
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
-				pos.x += PLAYER_SPEED * lastFrameTime.asSeconds();
+				movement.x += PLAYER_SPEED * lastFrameTime.asSeconds();
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
-				pos.y += PLAYER_SPEED * lastFrameTime.asSeconds();
+				movement.y += PLAYER_SPEED * lastFrameTime.asSeconds();
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
-				pos.y -= PLAYER_SPEED * lastFrameTime.asSeconds();
+				movement.y -= PLAYER_SPEED * lastFrameTime.asSeconds();
 			}
 			if (escapeKeyPressed)
 			{
 				levelMenuOpen = true;
 			}
 
-			player.setPosition(pos);
+			const sf::Vector2f playerPosition = player.getPosition();
+			CollisionHandler::clampMovement(movement, playerPosition, player.getSize(), worldMap);
+			player.setPosition(playerPosition + movement);
 			window.draw(player);
 		}
 		window.display();
 	}
-
 	return 0;
 }

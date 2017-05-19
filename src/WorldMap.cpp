@@ -4,27 +4,15 @@
 #include <algorithm>
 #include <assert.h>
 #include <utility>
+#include <iostream>
 
-class LevelDetails
-{
-public:
-	LevelDetails(int tileSize, const sf::Vector2i& mapSize)
-		: m_tileSize(tileSize),
-		m_mapSize(mapSize)
-	{}
-
-	const int m_tileSize;
-	const sf::Vector2i m_mapSize;
-};
-
-LevelDetails parseLevelDetails(const TiXmlElement& root);
-			
 //TileSheetDetails
-WorldMap::TileSheetDetails::TileSheetDetails(const std::string& name, int tileSize, int rows, int columns, double margin, double spacing)
+WorldMap::TileSheetDetails::TileSheetDetails(const std::string& name, int tileSize, int rows, int columns, int firstGID, double margin, double spacing)
 	: m_name(name), 
 	m_tileSize(tileSize),
 	m_rows(rows),
 	m_columns(columns),
+	m_firstGID(firstGID),
 	m_margin(margin),
 	m_spacing(spacing)
 {}
@@ -104,8 +92,18 @@ sf::IntRect WorldMap::TileSheet::getTileLocationByPosition(const sf::IntRect& po
 	return sf::IntRect(position.left * tileSize, position.top * tileSize, position.width * tileSize, position.height * tileSize);
 }
 
+void WorldMap::CollidableTileLayer::addCollidableTile(const sf::Vector2i & tilePosition, int tileSize)
+{
+	m_tileMap.emplace_back(tilePosition.x, tilePosition.y - 32);
+}
+
+const std::vector<sf::Vector2i>& WorldMap::CollidableTileLayer::getTileMap() const
+{
+	return m_tileMap;
+}
+
 //TileLayer
-WorldMap::TileLayer::Tile::Tile(const sf::Vector2i& position, const TileSheet& tileSheet, int tileID)
+WorldMap::TileLayer::Tile::Tile(const sf::Vector2f& position, const TileSheet& tileSheet, int tileID)
 	: m_position(position),
 	m_tileID(tileID),
 	m_tileSheet(tileSheet)
@@ -137,10 +135,10 @@ WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData,
 	{
 		for (int col = 0; col < mapSize.x; ++col)
 		{
-			int tileDrawID = tileMapData[row][col]; //Get ID for tile
-			if (tileDrawID > 0)
+			const int tileDrawID = tileMapData[row][col];
+			if (tileDrawID >= 0)
 			{
-				m_tileMap.emplace_back(sf::Vector2i(col, row), tileSheet, tileDrawID);
+				m_tileMap.emplace_back(sf::Vector2f(col, row), tileSheet, tileDrawID);
 			}
 		}
 	}
@@ -156,7 +154,9 @@ void WorldMap::TileLayer::draw(sf::RenderWindow& window)
 
 //WorldMap
 WorldMap::WorldMap(const std::string& mapName)
-	: m_tileLayers()
+	: m_tileLayers(),
+	m_tileSheets(),
+	m_collidableTileLayer()
 {
 	//Parse Level
 	TiXmlDocument levelDocument;
@@ -164,9 +164,20 @@ WorldMap::WorldMap(const std::string& mapName)
 	assert(isOpen);
 
 	const TiXmlElement& rootNode = *levelDocument.RootElement();
-	const LevelDetails levelDetails = parseLevelDetails(rootNode);
+	m_levelDetails = parseLevelDetails(rootNode);
 	parseTileSheets(rootNode);
-	parseTileMap(rootNode, levelDetails);
+	parseTileMap(rootNode);
+	parseCollidableLayer(rootNode);
+}
+
+const WorldMap::CollidableTileLayer& WorldMap::getCollidableTileLayer() const
+{
+	return m_collidableTileLayer;
+}
+
+const WorldMap::LevelDetails & WorldMap::getLevelDetails() const
+{
+	return m_levelDetails;
 }
 
 void WorldMap::draw(sf::RenderWindow & window)
@@ -177,7 +188,7 @@ void WorldMap::draw(sf::RenderWindow & window)
 	}
 }
 
-void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & levelDetails)
+void WorldMap::parseTileMap(const TiXmlElement & root)
 {
 	for (const TiXmlElement* tileLayerNode = root.FirstChildElement(); tileLayerNode != nullptr; tileLayerNode = tileLayerNode->NextSiblingElement())
 	{
@@ -185,13 +196,36 @@ void WorldMap::parseTileMap(const TiXmlElement & root, const LevelDetails & leve
 		{
 			continue;
 		}
-		//Getting the tile sheet name that the tile layer uses
-		//Does mean that tile layer can only use one tile sheet
-		//Will have to implement a way to be able to use multiple tilesheets for a singular layer when needed
-		const auto& tileSheetNode = *tileLayerNode->FirstChildElement()->FirstChildElement();
-		const std::string tileSheetName = tileSheetNode.Attribute("value");
 
-		m_tileLayers.emplace_back(decodeTileLayer(*tileLayerNode, levelDetails), levelDetails.m_mapSize, getTileSheet(tileSheetName));
+		const auto& tileSheetPropertyNode = *tileLayerNode->FirstChildElement()->FirstChildElement();
+		const std::string tileSheetName = tileSheetPropertyNode.Attribute("value");
+		m_tileLayers.emplace_back(decodeTileLayer(*tileLayerNode, tileSheetName), m_levelDetails.m_mapSize, getTileSheet(tileSheetName));
+	}
+}
+
+void WorldMap::parseCollidableLayer(const TiXmlElement & root)
+{
+	for (const auto* objectLayerNode = root.FirstChildElement(); objectLayerNode != nullptr; 
+		objectLayerNode = objectLayerNode->NextSiblingElement())
+	{
+		if (objectLayerNode->Value() != std::string("objectgroup"))
+		{
+			continue;
+		}
+
+		for (const auto* collidableTileNode = objectLayerNode->FirstChildElement(); collidableTileNode != nullptr;
+			collidableTileNode = collidableTileNode->NextSiblingElement())
+		{
+			sf::Vector2i tilePosition;
+			int tileSize = 0;
+			collidableTileNode->Attribute("x", &tilePosition.x);
+			collidableTileNode->Attribute("y", &tilePosition.y);
+			collidableTileNode->Attribute("height", &tileSize);
+			m_collidableTileLayer.addCollidableTile(tilePosition, tileSize);
+		}
+
+		//Found Collidable tile layer
+		break;
 	}
 }
 
@@ -218,28 +252,20 @@ void WorldMap::parseTileSheets(const TiXmlElement & root)
 		assert(tileHeight == tileWidth);
 		int tileSize = 0;
 		tileSetNode->Attribute("tilewidth", &tileSize);
+		int firstGID = 0;
+		tileSetNode->Attribute("firstgid", &firstGID);
 		double spacing = 0, margin = 0;
 		tileSetNode->Attribute("spacing", &spacing);
 		tileSetNode->Attribute("margin", &margin);
 		const int columns = tileSetSize.x / (tileSize + spacing);
 		const int rows = tileSetSize.y / (tileSize + spacing);
 
-		const TileSheetDetails tileSheetDetails(tileSheetName, tileSize, rows, columns, margin, spacing);
+		const TileSheetDetails tileSheetDetails(tileSheetName, tileSize, rows, columns, firstGID, margin, spacing);
 		m_tileSheets.emplace(tileSheetName, TileSheet(tileSheetDetails, tileSheetPath));
 	}
 }
 
-LevelDetails parseLevelDetails(const TiXmlElement & root)
-{
-	int width = 0, height = 0, tileSize = 0;
-	root.Attribute("width", &width);
-	root.Attribute("height", &height);
-	root.Attribute("tilewidth", &tileSize);
-
-	return LevelDetails(tileSize, sf::Vector2i(width, height));
-}
-
-std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & tileLayerElement, const LevelDetails & levelDetails) const
+std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & tileLayerElement, const std::string& tileSheetName) const
 {
 	std::vector<std::vector<int>> tileData;
 
@@ -259,17 +285,18 @@ std::vector<std::vector<int>> WorldMap::decodeTileLayer(const TiXmlElement & til
 	const std::string t = text->Value();
 	decodedIDs = base64.base64_decode(t);
 
-	const std::vector<int> layerColumns(levelDetails.m_mapSize.x);
-	for (int i = 0; i < levelDetails.m_mapSize.y; ++i)
+	const std::vector<int> layerColumns(m_levelDetails.m_mapSize.x);
+	for (int i = 0; i < m_levelDetails.m_mapSize.y; ++i)
 	{
 		tileData.push_back(layerColumns);
 	}
 
-	for (int rows = 0; rows < levelDetails.m_mapSize.y; ++rows)
+	const auto& tileSheetDetails = getTileSheet(tileSheetName).getDetails();
+	for (int rows = 0; rows < m_levelDetails.m_mapSize.y; ++rows)
 	{
-		for (int cols = 0; cols < levelDetails.m_mapSize.x; ++cols)
+		for (int cols = 0; cols < m_levelDetails.m_mapSize.x; ++cols)
 		{
-			tileData[rows][cols] = *((int*)decodedIDs.data() + rows * levelDetails.m_mapSize.x + cols) - 1;
+			tileData[rows][cols] = *((int*)decodedIDs.data() + rows * m_levelDetails.m_mapSize.x + cols) - tileSheetDetails.m_firstGID;
 		}
 	}
 
@@ -281,4 +308,14 @@ const WorldMap::TileSheet & WorldMap::getTileSheet(const std::string & name) con
 	auto cIter = m_tileSheets.find(name);
 	assert(cIter != m_tileSheets.cend());
 	return cIter->second;
+}
+
+WorldMap::LevelDetails WorldMap::parseLevelDetails(const TiXmlElement & root) const 
+{
+	int width = 0, height = 0, tileSize = 0;
+	root.Attribute("width", &width);
+	root.Attribute("height", &height);
+	root.Attribute("tilewidth", &tileSize);
+
+	return LevelDetails(tileSize, sf::Vector2i(width, height));
 }
