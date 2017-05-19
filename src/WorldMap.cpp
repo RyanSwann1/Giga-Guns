@@ -104,14 +104,14 @@ const std::vector<sf::Vector2i>& WorldMap::CollidableTileLayer::getTileMap() con
 
 //TileLayer
 WorldMap::TileLayer::Tile::Tile(const sf::Vector2f& position, const TileSheet& tileSheet, int tileID)
-	: m_position(position, sf::Vector2f(tileSheet.getDetails().m_tileSize, tileSheet.getDetails().m_tileSize)),
+	: m_position(position),
 	m_tileID(tileID),
 	m_tileSheet(tileSheet)
 {
 	m_sprite.setTexture(m_tileSheet.getTexture());
 	m_sprite.setTextureRect(m_tileSheet.getTileLocationByID(m_tileID));
 	const int tileSize = m_tileSheet.getDetails().m_tileSize;
-	m_sprite.setPosition(sf::Vector2f(m_position.left * tileSize, m_position.top * tileSize));
+	m_sprite.setPosition(sf::Vector2f(m_position.x * tileSize, m_position.y * tileSize));
 }
 
 WorldMap::TileLayer::Tile::Tile(const Tile& orig)
@@ -122,7 +122,7 @@ WorldMap::TileLayer::Tile::Tile(const Tile& orig)
 	m_sprite.setTexture(m_tileSheet.getTexture());
 	m_sprite.setTextureRect(m_tileSheet.getTileLocationByID(m_tileID));
 	const int tileSize = m_tileSheet.getDetails().m_tileSize;
-	m_sprite.setPosition(sf::Vector2f(m_position.left * tileSize, m_position.top * tileSize));
+	m_sprite.setPosition(sf::Vector2f(m_position.x * tileSize, m_position.y * tileSize));
 }
 
 WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData, const sf::Vector2i& mapSize, const TileSheet& tileSheet)
@@ -135,7 +135,7 @@ WorldMap::TileLayer::TileLayer(const std::vector<std::vector<int>>& tileMapData,
 	{
 		for (int col = 0; col < mapSize.x; ++col)
 		{
-			const int tileDrawID = tileMapData[row][col]; //Get ID for tile
+			const int tileDrawID = tileMapData[row][col];
 			m_tileMap.emplace_back(sf::Vector2f(col, row), tileSheet, tileDrawID);
 		}
 	}
@@ -221,6 +221,7 @@ void WorldMap::parseCollidableLayer(const TiXmlElement & root)
 			m_collidableTileLayer.addCollidableTile(tilePosition, tileSize);
 		}
 
+		//Found Collidable tile layer
 		break;
 	}
 }

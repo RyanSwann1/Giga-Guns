@@ -3,7 +3,6 @@
 class Gui
 {
 public:
-
 	Gui(sf::Font& font, sf::RenderWindow& window);
 
 	bool Button(const sf::String& label, sf::Vector2f position);

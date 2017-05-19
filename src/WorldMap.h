@@ -67,7 +67,7 @@ class WorldMap
 			Tile(const sf::Vector2f& position, const TileSheet& tileSheet, int tileID);
 			Tile(const Tile& orig);
 
-			const sf::FloatRect m_position;
+			const sf::Vector2i m_position;
 			const int m_tileID;
 			const TileSheet& m_tileSheet;
 			sf::Sprite m_sprite;

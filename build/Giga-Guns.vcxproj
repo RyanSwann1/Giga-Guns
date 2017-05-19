@@ -100,7 +100,7 @@
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
-copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
+copy ..\res\CollidableTile.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,7 +119,7 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
-copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
+copy ..\res\CollidableTile.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,7 +142,7 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
-copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
+copy ..\res\CollidableTile.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,7 +165,7 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
-copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
+copy ..\res\CollidableTile.png "$(OutputPath)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
