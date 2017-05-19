@@ -99,7 +99,6 @@
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\Map1.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
 copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
@@ -119,7 +118,6 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\Map1.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
 copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
@@ -143,7 +141,6 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\Map1.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
 copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>
@@ -167,7 +164,6 @@ copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     <PostBuildEvent>
       <Command>copy ..\res\Roboto.ttf "$(OutputPath)"
 copy ..\res\Map.tmx "$(OutputPath)"
-copy ..\res\Map1.tmx "$(OutputPath)"
 copy ..\res\tilesheet_complete.png "$(OutputPath)"
 copy ..\res\CollidableLayer.png "$(OutputPath)"</Command>
     </PostBuildEvent>

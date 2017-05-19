@@ -2,12 +2,14 @@
 #include "WorldMap.h"
 #include <math.h>
 
-sf::Vector2f CollisionHandler::handleTileCollision(const sf::FloatRect & entityAABB, const WorldMap & worldMap)
+void CollisionHandler::clampMovement(sf::Vector2f& movement, const sf::Vector2f& position, const sf::Vector2f& size, const WorldMap & worldMap)
 {
-	sf::Vector2f newPos;
-	for (const auto& tileAABB : worldMap.getCollidableTileLayer().getTileMap())
+	const sf::FloatRect entityAABB(position + movement, size);
+	for (const auto& tilePosition : worldMap.getCollidableTileLayer().getTileMap())
 	{
 		sf::FloatRect intersection;
+		const int tileSize = worldMap.getLevelDetails().m_tileSize;
+		const sf::FloatRect tileAABB(sf::Vector2f(tilePosition.x, tilePosition.y), sf::Vector2f(tileSize, tileSize));
 		if (!entityAABB.intersects(tileAABB, intersection))
 		{
 			continue;
@@ -21,25 +23,24 @@ sf::Vector2f CollisionHandler::handleTileCollision(const sf::FloatRect & entityA
 			//Determine direction in which to move entity
 			if (xDifference > 0.0f)
 			{
-				newPos.x = intersection.width;
+				movement.x += intersection.width;
 			}
 			else
 			{
-				newPos.x = -intersection.width;
+				movement.x -= intersection.width;
 			}
 		}
 		else
 		{
 			if (yDifference > 0.0f)
 			{
-				newPos.y = intersection.height;
+				movement.y += intersection.height;
 			}
 			else
 			{
-				newPos.y = -intersection.height;
+				movement.y -= intersection.height;
 			}
 		}
+		break;
 	}
-
-	return newPos;
 }

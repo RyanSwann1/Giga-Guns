@@ -2,7 +2,8 @@
 
 #include <SFML\Graphics.hpp>
 class WorldMap;
+
 namespace CollisionHandler
 {
-	sf::Vector2f handleTileCollision(const sf::FloatRect& entityAABB, const WorldMap& worldMap);
+	void clampMovement(sf::Vector2f& movement, const sf::Vector2f& position, const sf::Vector2f& size, const WorldMap& worldMap);
 }
